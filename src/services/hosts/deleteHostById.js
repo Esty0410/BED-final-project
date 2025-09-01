@@ -1,14 +1,14 @@
-import hostData from '../../data/hosts.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const deleteHostById = (id) => {
-    const hostIndex = hostData.hosts.findIndex(host => host.id === id);
+const deleteHostById = async (id) => {
+    console.log("deleteHostById id:", id)
+    const prisma = new PrismaClient();
+    const host = await prisma.host.deleteMany({
+        where: { id },
+    });
+    console.log("deleteHostById host:", host)
 
-    if (hostIndex === -1) {
-        return null;
-    }
-
-    const deletedHost = hostData.hosts.splice(hostIndex, 1);
-    return deletedHost;
+    return host;
 };
 
 export default deleteHostById;

@@ -1,17 +1,19 @@
-import { v4 as uuidv4 } from 'uuid';
-import reviewData from '../../data/reviews.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const createReview = (userId, propertyId, rating, comment) => {
+const createReview = async (userId, propertyId, rating, comment) => {
     const newReview = {
-        id: uuidv4(),
         userId,
         propertyId,
         rating,
         comment,
     };
 
-    reviewData.reviews.push(newReview);
-    return newReview;
+    const prisma = new PrismaClient();
+    const review = await prisma.review.create({
+        data: newReview,
+    });
+
+    return review;
 };
 
 export default createReview;

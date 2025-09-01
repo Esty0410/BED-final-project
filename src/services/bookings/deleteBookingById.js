@@ -1,14 +1,12 @@
-import bookingData from '../../data/bookings.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const deleteBookingById = (id) => {
-    const bookingIndex = bookingData.bookings.findIndex(booking => booking.id === id);
+const deleteBookingById = async (id) => {
+    const prisma = new PrismaClient();
+    const booking = await prisma.booking.delete({
+        where: { id },
+    });
 
-    if (bookingIndex === -1) {
-        return null;
-    }
-
-    const deletedBookingById = bookingData.bookings.splice(bookingIndex, 1);
-    return deletedBookingById;
+    return booking;
 };
 
 export default deleteBookingById;

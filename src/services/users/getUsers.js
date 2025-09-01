@@ -1,7 +1,19 @@
-import userData from '../../data/users.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getUsers = () => {
-    return userData.users.map(({ password, ...user}) => user);
-};
+const getUsers = async () => {
+    const prisma = new PrismaClient();
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            username: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            pictureUrl: true
+        }
+    });
+
+    return users;
+}
 
 export default getUsers;

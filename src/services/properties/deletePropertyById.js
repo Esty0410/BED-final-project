@@ -1,14 +1,15 @@
-import propertyData from '../../data/properties.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const deletePropertyById = (id) => {
-    const propertyIndex = propertyData.properties.findIndex(property => property.id === id);
+const deletePropertyById = async (id) => {
+    console.log("deletepPropertyById id:", id)
+    const prisma = new PrismaClient();
+    const property = await prisma.property.delete({
+        where: { id },
+        include: { propertyHost: true },
+    });
+    console.log("deletePropertyById property:", property)
 
-    if (propertyIndex === -1) {
-        return null;
-    }
-
-    const deletedProperty = propertyData.properties.splice(propertyIndex, 1);
-    return deletedProperty;
+    return property;
 };
 
 export default deletePropertyById;

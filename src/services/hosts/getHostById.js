@@ -1,7 +1,21 @@
-import hostData from '../../data/hosts.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getHostById = (id) => {
-    return hostData.hosts.find((host) => host.id === id);
+const getHostById = async (id) => {
+    const prisma = new PrismaClient();
+    const host = await prisma.host.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            username: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            pictureUrl: true,
+            aboutMe: true,
+        },
+    });
+
+    return host;
 };
 
 export default getHostById;

@@ -1,9 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
-import bookingData from '../../data/bookings.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const createBooking = (userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus) => {
+const createBooking = async (userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus) => {
     const newBooking = {
-        id: uuidv4(),
         userId,
         propertyId,
         checkinDate,
@@ -13,8 +11,12 @@ const createBooking = (userId, propertyId, checkinDate, checkoutDate, numberOfGu
         bookingStatus,
     };
 
-    bookingData.bookings.push(newBooking);
-    return newBooking;
+    const prisma = new PrismaClient();
+    const booking = await prisma.booking.create({
+        data: newBooking,
+    });
+
+    return booking;
 };
 
 export default createBooking;

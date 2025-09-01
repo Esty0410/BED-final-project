@@ -1,12 +1,15 @@
-import propertyData from '../../data/properties.json' with { type: 'json'};
+import { PrismaClient } from "@prisma/client";
 
-const getPropertyByLocationAndPrice = (locations, pricePerNight) => {
-    if (!Array.isArray(locations)) {
-        locations = [locations];
-    }
-    return propertyData.properties.filter((property) => 
-        locations.includes(property.location) && property.pricePerNight <= pricePerNight
-    )
+const getPropertyByLocationAndPrice = async (location, pricePerNight) => {
+    const prisma = new PrismaClient();
+    const property = await prisma.property.findMany({
+        where: {
+            location,
+            pricePerNight: Number(pricePerNight),
+        },
+    });
+
+    return property;
 };
 
 export default getPropertyByLocationAndPrice;

@@ -1,26 +1,13 @@
-import hostData from '../../data/hosts.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const updateHostById = (id, updatedHost) => {
-    const hostIndex = hostData.hosts.findIndex((host) => host.id === id);
+const updateHostById = async (id, updatedHost) => {
+    const prisma = new PrismaClient();
+    const host = await prisma.host.updateMany({
+        where: { id },
+        data: updatedHost,
+    });
 
-    if (hostIndex === -1) {
-        return null;
-    }
-
-    const { username, password, name, email, phoneNumber, pictureUrl, aboutMe } = updatedHost;
-
-    hostData.hosts[hostIndex] = {
-        ...hostData.hosts[hostIndex],
-        username: username || hostData.hosts[hostIndex].username,
-        password: password || hostData.hosts[hostIndex].password,
-        name: name || hostData.hosts[hostIndex].name,
-        email: email || hostData.hosts[hostIndex].email,
-        phoneNumber: phoneNumber || hostData.hosts[hostIndex].phoneNumber,
-        pictureUrl: pictureUrl || hostData.hosts[hostIndex].pictureUrl,
-        aboutMe: aboutMe || hostData.hosts[hostIndex].aboutMe,
-    };
-
-    return hostData.hosts[hostIndex];
+    return host.count > 0 ? id : null;
 };
 
 export default updateHostById;

@@ -1,7 +1,12 @@
-import propertyData from '../../data/properties.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getPropertyById = (id) => {
-    return propertyData.properties.find((property) => property.id === id);
+const getPropertyById = async (id) => {
+    const prisma = new PrismaClient();
+    const property = await prisma.property.findUnique({
+        where: { id },
+    });
+
+    return property;
 };
 
 export default getPropertyById;

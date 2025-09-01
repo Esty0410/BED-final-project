@@ -1,9 +1,24 @@
-import { v4 as uuidv4 } from 'uuid';
-import hostData from '../../data/hosts.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const createHost = (username, password, name, email, phoneNumber, pictureUrl, aboutMe) => {
-    const newHost = {
-        id: uuidv4(),
+const createHost = async (username, password, name, email, phoneNumber, pictureUrl, aboutMe) => {
+    const prisma = new PrismaClient();
+    const existingHost = await prisma.host.findFirst({
+        where: {
+            OR: [
+                { email: email },
+                { username: username }
+            ]
+        }
+    });
+
+    if (existingHost) {
+        const error = new Error('Host already exists');
+        error.code = "HOST_EXISTS";
+        throw error;
+    }
+
+    return await prisma.host.create({
+        data: {
         username,
         password,
         name,
@@ -11,10 +26,8 @@ const createHost = (username, password, name, email, phoneNumber, pictureUrl, ab
         phoneNumber,
         pictureUrl,
         aboutMe,
-    };
-
-    hostData.hosts.push(newHost);
-    return newHost;
+        }
+    });
 };
 
 export default createHost;

@@ -1,7 +1,10 @@
-import propertyData from '../../data/properties.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getProperties = () => {
-    return propertyData.properties;
+const getProperties = async () => {
+    const prisma = new PrismaClient();
+    const properties = await prisma.property.findMany();
+
+    return properties;
 };
 
 export default getProperties;

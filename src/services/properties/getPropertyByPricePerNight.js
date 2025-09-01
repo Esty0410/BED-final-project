@@ -1,8 +1,12 @@
-import propertyData from '../../data/properties.json' with { type: 'json'};
+import { PrismaClient } from "@prisma/client";
 
-const getPropertyByPricePerNight = (pricePerNight) => {
-    const price = parseFloat(pricePerNight);
-    return propertyData.properties.find((property) => property.pricePerNight === price);
+const getPropertyByPricePerNight = async (pricePerNight) => {
+    const prisma = new PrismaClient();
+    const property = await prisma.property.findMany({
+        where: { pricePerNight: Number(pricePerNight) },
+    });
+
+    return property;
 };
 
 export default getPropertyByPricePerNight;

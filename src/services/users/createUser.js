@@ -1,19 +1,32 @@
-import { v4 as uuidv4 } from 'uuid';
-import userData from '../../data/users.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const createUser = (username, password, name, email, phoneNumber, pictureUrl) => {
-    const newUser = {
-        id: uuidv4(),
-        username,
-        password,
-        name,
-        email,
-        phoneNumber,
-        pictureUrl,
-    };
+const createUser = async (username, password, name, email, phoneNumber, pictureUrl) => {
+    const prisma = new PrismaClient();
+    const existingUser = await prisma.user.findFirst({
+        where: {
+            OR: [
+                { email: email },
+                { username: username }
+            ]
+        }
+    });
 
-    userData.users.push(newUser);
-    return newUser;
+    if (existingUser) {
+        const error = new Error('User already exists');
+        error.code = 'USER_EXISTS';
+        throw error;
+    }
+
+    return await prisma.user.create({
+        data: {
+            username,
+            password,
+            name,
+            email,
+            phoneNumber,
+            pictureUrl
+        }
+    });
 };
 
 export default createUser;

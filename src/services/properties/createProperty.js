@@ -1,9 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
-import propertyData from '../../data/properties.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const createProperty = (title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating) => {
+const createProperty = async (title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating) => {
     const newProperty = {
-        id: uuidv4(),
         title,
         description,
         location,
@@ -15,8 +13,12 @@ const createProperty = (title, description, location, pricePerNight, bedroomCoun
         rating,
     };
 
-    propertyData.properties.push(newProperty);
-    return newProperty;
+    const prisma = new PrismaClient();
+    const property = await prisma.property.create({
+        data: newProperty,
+    });
+    
+    return property;
 };
 
 export default createProperty;

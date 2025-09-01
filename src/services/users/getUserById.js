@@ -1,13 +1,20 @@
-import userData from '../../data/users.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getUserById = (id) => {
-    const user = userData.users.find((user) => user.id === id);
-    if (!user) {
-        return null;
-    }
+const getUserById = async (id) => {
+    const prisma = new PrismaClient();
+    const user = await prisma.user.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            username: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            pictureUrl: true
+        }
+    });
 
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return user;
 };
 
 export default getUserById;

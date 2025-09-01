@@ -1,11 +1,12 @@
-import propertyData from '../../data/properties.json' with { type: 'json'};
+import { PrismaClient } from "@prisma/client";
 
-const getPropertyByLocation = (locations) => {
-    if (!Array.isArray(locations)) {
-        locations = [locations];
-    }
+const getPropertyByLocation = async (location) => {
+    const prisma = new PrismaClient();
+    const property = await prisma.property.findMany({
+        where: { location },
+    });
 
-    return propertyData.properties.filter((property) => locations.includes(property.location));
+    return property;
 };
 
 export default getPropertyByLocation;

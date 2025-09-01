@@ -17,7 +17,7 @@ model User {
   username    String    @unique
   password    String
   name        String
-  email       String
+  email       String  @unique
   phoneNumber String
   pictureUrl  String
 
@@ -32,8 +32,8 @@ model Review {
   rating     Int
   comment    String
 
-  createdBy        User     @relation(fields: [userId], references: [id])
-  reviewedProperty Property @relation(fields: [propertyId], references: [id])
+  createdBy        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  reviewedProperty Property @relation(fields: [propertyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Booking {
@@ -46,8 +46,8 @@ model Booking {
   totalPrice     Float
   bookingStatus  String
 
-  bookedProperty Property @relation(fields: [propertyId], references: [id])
-  bookedBy       User     @relation(fields: [userId], references: [id])
+  bookedProperty Property @relation(fields: [propertyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookedBy       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Property {
@@ -62,7 +62,7 @@ model Property {
   maxGuestCount  Int
   rating         Int
 
-  propertyHost Host      @relation(fields: [hostId], references: [id])
+  propertyHost Host      @relation("HostProperties", fields: [hostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   booking      Booking[]
   review       Review[]
 }
@@ -72,10 +72,10 @@ model Host {
   username    String @unique
   password    String
   name        String
-  email       String
+  email       String @unique
   phoneNumber String
   pictureUrl  String
   aboutMe     String
 
-  property Property[]
+  property Property[] @relation("HostProperties")
 }

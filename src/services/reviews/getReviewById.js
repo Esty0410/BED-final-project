@@ -1,7 +1,12 @@
-import reviewData from '../../data/reviews.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const getReviewById = (id) => {
-    return reviewData.reviews.find((review) => review.id === id);
+const getReviewById = async (id) => {
+    const prisma = new PrismaClient();
+    const review = prisma.review.findUnique({
+        where: { id },
+    });
+
+    return review;
 };
 
 export default getReviewById;

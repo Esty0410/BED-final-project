@@ -1,23 +1,13 @@
-import reviewData from '../../data/reviews.json' with { type: 'json' };
+import { PrismaClient } from "@prisma/client";
 
-const updateReviewById = (id, updatedReview) => {
-    const reviewIndex = reviewData.reviews.findIndex((review) => review.id === id);
+const updateReviewById = async (id, updatedReview) => {
+    const prisma = new PrismaClient();
+    const review = await prisma.review.updateMany({
+        where: { id },
+        data: updatedReview,
+    });
 
-    if (reviewIndex === -1) {
-        return null;
-    }
-
-    const { userId, productId, rating, comment } = updatedReview;
-
-    reviewData.reviews[reviewIndex] = {
-        ...reviewData.reviews[reviewIndex],
-        userId: userId || reviewData.reviews[reviewIndex].userId,
-        productId: productId || reviewData.reviews[reviewIndex].productId,
-        rating: rating || reviewData.reviews[reviewIndex].rating,
-        comment: comment || reviewData.reviews[reviewIndex].comment,
-    };
-
-    return reviewData.reviews[reviewIndex];
+    return review.count > 0 ? id : null;
 };
 
 export default updateReviewById;
