@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
             }
         } else if (email) {
             user = await getUserByEmail(email);
-            if(!user) {
+            if(!user || user.length === 0) {
                 return res.status(404).json({ message: `User with email ${email} was not found...`})
             }
         } else {
@@ -39,17 +39,23 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", authMiddleware, async (req, res) => {
-    try {
-        const { username, password, name, email, phoneNumber, pictureUrl } = req.body;
-        const newUser = await createUser(username, password, name, email, phoneNumber, pictureUrl);
-        res.status(201).json(newUser);
-    } catch (err) {
-        if (err.code === "USER_EXISTS") {
-            return res.status(409).json({ message: 'User already exists..'});
-        }
-        res.status(500).json({ message: "Internal server error", error: err.message });
+  try {
+    const { username, password, name, email, phoneNumber, pictureUrl } = req.body;
+
+    if (!username || !password || !name) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+
+    const newUser = await createUser(username, password, name, email, phoneNumber, pictureUrl);
+    res.status(201).json(newUser);
+  } catch (err) {
+    if (err.code === "USERNAME_EXISTS") {
+      return res.status(409).json({ message: 'Username already exists.' });
+    }
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
 });
+
 
 router.get("/:id", async (req, res) => {
     try {
@@ -71,7 +77,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         const user = await deleteUserById(id);
 
         if (user) {
-            res.status(200).send({
+            res.status(200).json({
                 message: `User with id ${id} deleted successfully`,
                 user,
             });
@@ -90,7 +96,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
         const user = await updateUserById(id, { username, password, name, email, phoneNumber, pictureUrl });
 
         if (user) {
-            res.status(200).send({
+            res.status(200).json({
                 message: `User with id ${id} updated succesfully`,
                 user,
             });

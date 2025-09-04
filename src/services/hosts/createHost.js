@@ -4,10 +4,7 @@ const createHost = async (username, password, name, email, phoneNumber, pictureU
     const prisma = new PrismaClient();
     const existingHost = await prisma.host.findFirst({
         where: {
-            OR: [
-                { email: email },
-                { username: username }
-            ]
+            username: username
         }
     });
 

@@ -4,16 +4,13 @@ const createUser = async (username, password, name, email, phoneNumber, pictureU
     const prisma = new PrismaClient();
     const existingUser = await prisma.user.findFirst({
         where: {
-            OR: [
-                { email: email },
-                { username: username }
-            ]
+            username: username
         }
     });
 
     if (existingUser) {
         const error = new Error('User already exists');
-        error.code = 'USER_EXISTS';
+        error.code = 'USERNAME_EXISTS';
         throw error;
     }
 

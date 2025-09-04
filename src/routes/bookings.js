@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
         if (userId) {
             booking = await getBookingByUserId(userId);
-            if (!booking) {
+            if (!booking || booking.length === 0) {
                 return res.status(404).json({ message: `Booking with userId ${userId} was not found...`})
             }
         } else {

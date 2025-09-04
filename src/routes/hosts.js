@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
         if (name) {
             host = await getHostByName(name);
-            if (!host) {
+            if (!host || host.length === 0) {
                 return res.status(404).json({ message: `Host with name ${name} was not found...`})
             }
         } else {
@@ -33,17 +33,23 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", authMiddleware, async (req, res) => {
-    try {
-        const { username, password, name, email, phoneNumber, pictureUrl, aboutMe } = req.body;
-        const newHost = await createHost(username, password, name, email, phoneNumber, pictureUrl, aboutMe);
-        res.status(201).json(newHost);
-    } catch (err) {
-        if (err.code === "HOST_EXISTS") {
-            return res.status(409).json({ message: 'User already exists..'});
-        }
-        res.status(500).json({ message: "Internal server error :("});
+  try {
+    const { username, password, name, email, phoneNumber, pictureUrl, aboutMe } = req.body;
+
+    if (!username || !password || !name) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
+
+    const newHost = await createHost(username, password, name, email, phoneNumber, pictureUrl, aboutMe);
+    res.status(201).json(newHost);
+  } catch (err) {
+    if (err.code === "HOST_EXISTS") {
+      return res.status(409).json({ message: 'Username already exists.' });
+    }
+    res.status(500).json({ message: "Internal server error :(" });
+  }
 });
+
 
 router.get("/:id", async (req, res) => {
     try {
@@ -69,8 +75,8 @@ router.delete("/:id", authMiddleware, async (req, res) => {
         const host = await deleteHostById(id);
         console.log("router host:", id)
 
-        if (host) {
-            res.status(200).send({
+        if (host.count > 0) {
+            res.status(200).json({
                 message: `Host with id ${id} deleted successfully`,
                 host,
             });
@@ -93,7 +99,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
         const host = await updateHostById(id, { username, password, name, email, phoneNumber, pictureUrl, aboutMe });
 
         if (host) {
-            res.status(200).send({
+            res.status(200).json({
                 message: `Host with id ${id} updated successfully`,
                 host,
             });

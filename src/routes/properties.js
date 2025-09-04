@@ -18,17 +18,17 @@ router.get("/", async (req, res) => {
         let property;
         if (location && pricePerNight) {
             property = await getPropertyByLocationAndPrice(location, pricePerNight);
-            if (!property) {
+            if (!property || property.length === 0) {
                 return res.status(404).json({ message: `Property with location ${location} and price ${pricePerNight} was not found...`});
             }
         } else if (location) {
             property = await getPropertyByLocation(location);
-            if (!property) {
+            if (!property || property.length === 0) {
                 return res.status(404).json({ message: `Property with location ${location} was not found...`});
             }
         } else if (pricePerNight) {
             property = await getPropertyByPricePerNight(pricePerNight);
-            if(!property) {
+            if(!property || property.length === 0) {
                 return res.status(404).json({ message: `Property with price ${pricePerNight} was not found...`})
             }
         } else {
