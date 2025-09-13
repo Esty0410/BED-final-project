@@ -62,20 +62,23 @@ router.get("/:id", async (req, res) => {
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
+        console.log("Delete attempt for booking id:", id);
+
         const booking = await deleteBookingById(id);
 
-        if (booking) {
-            res.status(200).send({
-                message: `Booking with id ${id} deleted successfully`,
-                booking,
-            });
-        } else {
-            res.status(404).json({
+        if (!booking) {
+            return res.status(404).json({
                 message: `Booking with id ${id} was not found...`
             });
         }
+
+        res.status(200).json({
+            message: `Booking with id ${id} deleted successfully`,
+            booking,
+        });
     } catch (err) {
-        res.status(500).json({ message: "Internal server error :("});
+        console.error("Router error:", err);
+        res.status(500).json({ message: "Internal server error :(" });
     }
 });
 

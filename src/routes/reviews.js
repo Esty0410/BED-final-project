@@ -21,12 +21,25 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", authMiddleware, async (req, res) => {
-     try {
+    try {
         const { userId, propertyId, rating, comment } = req.body;
+
+        if (!userId || !propertyId || rating == null) {
+            return res.status(400).json({
+                message: "userId, propertyId and rating are required",
+            });
+        }
+
         const newReview = await createReview(userId, propertyId, rating, comment);
         res.status(201).json(newReview);
     } catch (err) {
-        res.status(500).json({ message: "Internal server error :("});
+        console.error("Create review error:", err.message);
+
+        if (err.message === "User or Property not found") {
+            return res.status(404).json({ message: err.message });
+        }
+
+        res.status(500).json({ message: "Internal server error :(" });
     }
 });
 
