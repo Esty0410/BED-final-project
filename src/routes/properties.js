@@ -47,7 +47,11 @@ router.get("/", async (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
     try {
         const { title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating} = req.body;
+        if (!title || !description || !location || !pricePerNight || !bedroomCount || !bathRoomCount || !maxGuestCount || !hostId || !rating) {
+            return res.status(400).json({ message: "Missing required fields"});
+        }
         const newProperty = await createProperty(title, description, location, pricePerNight, bedroomCount, bathRoomCount, maxGuestCount, hostId, rating);
+        console.log("New property created:", newProperty);
         res.status(201).json(newProperty);
     } catch (err) {
         res.status(500).json({ message: "Internal server error :("});

@@ -9,8 +9,8 @@
   },
   "scripts": {
     "dev": "nodemon src/index.js",
-    "test-positive": "newman run \"./postman/collections/Bookings API.json\" -e \"./postman/environments/Local.postman_environment.json\"",
-    "test-negative": "newman run \"./postman/collections/Bookings API Negative.json\" -e \"./postman/environments/Local.postman_environment.json\"",
+    "test-positive": "npx newman run \"./postman/collections/Bookings API.json\" -e \"./postman/environments/Local.postman_environment.json\"",
+    "test-negative": "npx newman run \"./postman/collections/Bookings API Negative.json\" -e \"./postman/environments/Local.postman_environment.json\"",
     "test": "npm run test-positive && npm run test-negative",
     "reset-db": "npx prisma db push --force-reset && npx prisma db seed",
     "clean-start": "npx prisma db push --force-reset && npx prisma db seed && npm run dev"
@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^6.15.0",
     "@sentry/node": "^7.120.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -27,10 +28,11 @@
     "winston": "^3.10.0"
   },
   "devDependencies": {
-    "newman": "^6.0.0",
-    "nodemon": "^3.0.1"
+    "newman": "^6.2.1",
+    "nodemon": "^3.0.1",
+    "prisma": "^6.15.0"
   },
   "engines": {
-    "node": ">=18 <19"
+    "node": ">=18 <=22"
   }
 }

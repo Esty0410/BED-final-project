@@ -35,6 +35,10 @@ router.get("/", async (req, res) => {
 router.post("/", authMiddleware, async (req, res) => {
     try {
         const { userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus} = req.body;
+        if ( !userId || !propertyId || !checkinDate || !checkoutDate || !numberOfGuests || !totalPrice || !bookingStatus) {
+            console.log("Missing required fields in request body, userId:", userId, "propertyId:", propertyId, "checkinDate:", checkinDate, "checkoutDate:", checkoutDate, "numberOfGuests:", numberOfGuests, "totalPrice:", totalPrice, "bookingStatus:", bookingStatus);
+            return res.status(400).json({ message: "Missing required fields"});
+        }
         const newBooking = await createBooking(userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus);
         res.status(201).json(newBooking);
     } catch (err) {
@@ -86,19 +90,26 @@ router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         const { userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus } = req.body;
+        if ( !checkinDate || !checkoutDate || !numberOfGuests || !totalPrice || !bookingStatus) {
+            console.log("Missing required fields in request body, checkinDate:", checkinDate, "checkoutDate:", checkoutDate, "numberOfGuests:", numberOfGuests, "totalPrice:", totalPrice, "bookingStatus:", bookingStatus);
+            return res.status(400).json({ message: "Missing required fields"});
+        }
         const booking = await updateBookingById(id, { userId, propertyId, checkinDate, checkoutDate, numberOfGuests, totalPrice, bookingStatus });
-
+        console.log("Updated booking:", booking);
         if (booking) {
+            console.log("Booking updated successfully 2:", booking);
             res.status(200).send({
                 message: `Booking with id ${id} updated successfully`,
                 booking,
             });
         } else {
+            console.log(`Booking with id ${id} not found for update 2.`);
             res.status(404).json({
                 message: `Booking with id ${id} not found...`
             });
         }
     } catch (err) {
+        console.log("Error in PUT /:id route 2:", err);
         res.status(500).json({ message: "Internal server error :("});
     }
 });
